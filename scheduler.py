@@ -16,25 +16,23 @@ def sjf(q):
     elapsed = 0
     pq = []
     while q:
-        # print(len(q))
+        counter = 0
         for p in q:
             if p.arrival <= elapsed:
-                heappush(pq, (p.burst, p))
-                p = None
+                heappush(pq, (p.burst, p.index, p))
+                q[counter] = None
+                counter += 1
                 
-        for p in q:
-            if p is None:
-                q.remove(p)
-                print(q)
+        q = [x for x in q if x is not None]
 
         while pq:
             x = heappop(pq)
 
-            if elapsed <= x[1].arrival:
-                elapsed = x[1].arrival
+            if elapsed <= x[2].arrival:
+                elapsed = x[2].arrival
 
-            print(elapsed, x[1].index + 1, str(x[1].burst) + "X")
-            elapsed += x[1].burst
+            print(elapsed, x[2].index + 1, str(x[2].burst) + "X")
+            elapsed += x[2].burst
 
 def srtf(q):
     pass
