@@ -13,7 +13,28 @@ def fcfs(q):
         elapsed += x[2].burst
 
 def sjf(q):
-    pass
+    elapsed = 0
+    pq = []
+    while q:
+        # print(len(q))
+        for p in q:
+            if p.arrival <= elapsed:
+                heappush(pq, (p.burst, p))
+                p = None
+                
+        for p in q:
+            if p is None:
+                q.remove(p)
+                print(q)
+
+        while pq:
+            x = heappop(pq)
+
+            if elapsed <= x[1].arrival:
+                elapsed = x[1].arrival
+
+            print(elapsed, x[1].index + 1, str(x[1].burst) + "X")
+            elapsed += x[1].burst
 
 def srtf(q):
     pass
@@ -50,10 +71,11 @@ def rr(q, t):
             elapsed += tempBurst
 
 class Process:
-    def __init__(self, arrival, burst, priority):
+    def __init__(self, arrival, burst, priority, index):
         self.arrival = arrival
         self.burst = burst
         self.priority = priority
+        self.index = index
 
 testCases = int(input())
 
@@ -72,13 +94,17 @@ for i in range(testCases):
     for j in range(processes):
         p = input()
         args = list(map(int, p.split()))
+        arrival = args[0]
+        burst = args[1]
+        priority = args[2]
 
         if sched_type == "fcfs" or sched_type == "rr":
-            heappush(pQueue, (args[0], j, Process(args[0], args[1], args[2])))
+            heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
         elif sched_type == "sjf":
-            heappush(pQueue, (args[1], args[0], j, Process(args[0], args[1], args[2])))
+            # heappush(pQueue, (args[1], args[0], j, Process(args[0], args[1], args[2])))
+            pQueue.append(Process(arrival, burst, priority, j))
         elif sched_type == "srtf":
-            heappush(pQueue, (args[0], j, Process(args[0], args[1], args[2])))
+            heappush(pQueue, (args[0], j, Process(arrival, burst, priority)))
         elif sched_type == "p":
             heappush(pQueue, (args[2], j, Process(args[0], args[1], args[2])))
         else:
