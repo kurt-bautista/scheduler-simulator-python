@@ -43,7 +43,7 @@ for i in range(testCases):
     if sched_type == "fcfs" or sched_type == "rr":
         heappush(pQueue, (args[0], Process(args[0], args[1], args[2])))
     elif sched_type == "sjf":
-        heappush(pQueue, (args[1], Process(args[0], args[1], args[2])))
+        heappush(pQueue, (args[1], args[0], Process(args[0], args[1], args[2])))
     elif sched_type == "srtf":
         heappush(pQueue, (args[0], Process(args[0], args[1], args[2])))
     elif sched_type == "p":
@@ -63,7 +63,3 @@ for i in range(testCases):
         rr(pQueue)
     else:
         print("Invalid scheduler")
-
-    
-
-
