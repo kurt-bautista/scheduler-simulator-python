@@ -2,7 +2,15 @@ from collections import deque
 from heapq import heappush, heappop
 
 def fcfs(q):
-    pass
+    elapsed = 0
+    while q:
+        x = heappop(q)
+
+        if elapsed <= x[0]:
+            elapsed = x[0]
+            
+        print(elapsed, x[1] + 1, str(x[2].burst) + "X")
+        elapsed += x[2].burst
 
 def sjf(q):
     pass
@@ -14,44 +22,50 @@ def p(q):
     pass
 
 def rr(q, t):
-    pass
+    elapsed = 0
+    while q:
+        x = heappop(q)
+
+        if elapsed <= x[0]:
+            elapsed = x[0]
+
+        print(elapsed, x[1] + 1, str(x[2].burst), end="")
+        elapsed += x[2].burst
 
 class Process:
-    def __init__(self, arrival, burst, priority, index):
+    def __init__(self, arrival, burst, priority):
         self.arrival = arrival
         self.burst = burst
         self.priority = priority
-        self.index = index
 
-testCases = raw_input()
+testCases = int(input())
 
 for i in range(testCases):
-    ln = raw_input()
+    ln = input()
     command = ln.split()
-    processes = command[0]
+    processes = int(command[0])
     sched_type = command[1].lower()
     time_quantum = 0
 
     if sched_type == "rr":
-        time_quantum = command[2]
+        time_quantum = int(command[2])
 
     pQueue = []
 
     for j in range(processes):
-        p = raw_input()
-        args = p.split()
+        p = input()
+        args = list(map(int, p.split()))
 
-    if sched_type == "fcfs" or sched_type == "rr":
-        heappush(pQueue, (args[0], j, Process(args[0], args[1], args[2], j + 1)))
-    elif sched_type == "sjf":
-        heappush(pQueue, (args[1], args[0], j, Process(args[0], args[1], args[2], j + 1)))
-    elif sched_type == "srtf":
-        heappush(pQueue, (args[0], j, Process(args[0], args[1], args[2], j + 1)))
-    elif sched_type == "p":
-        heappush(pQueue, (args[2], j, Process(args[0], args[1], args[2], j + 1)))
-    else:
-        print("Invalid scheduler")
-        return
+        if sched_type == "fcfs" or sched_type == "rr":
+            heappush(pQueue, (args[0], j, Process(args[0], args[1], args[2])))
+        elif sched_type == "sjf":
+            heappush(pQueue, (args[1], args[0], j, Process(args[0], args[1], args[2])))
+        elif sched_type == "srtf":
+            heappush(pQueue, (args[0], j, Process(args[0], args[1], args[2])))
+        elif sched_type == "p":
+            heappush(pQueue, (args[2], j, Process(args[0], args[1], args[2])))
+        else:
+            print("Invalid scheduler")
 
     print(i + 1) # Test case number
 
@@ -67,4 +81,3 @@ for i in range(testCases):
         rr(pQueue, time_quantum)
     else:
         print("Invalid scheduler")
-        return
