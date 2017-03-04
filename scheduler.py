@@ -1,12 +1,12 @@
 from collections import deque
-from heapq import heappush, heappop
+from heapq import heappush, heappop, heapify
 
 def fcfs(q):
     elapsed = 0
     while q:
         x = heappop(q)
 
-        if elapsed <= x[0]:
+        if elapsed < x[0]:
             elapsed = x[0]
 
         print(elapsed, x[1] + 1, str(x[2].burst) + "X")
@@ -28,7 +28,7 @@ def sjf(q):
         while pq:
             x = heappop(pq)
 
-            if elapsed <= x[2].arrival:
+            if elapsed < x[2].arrival:
                 elapsed = x[2].arrival
 
             print(elapsed, x[2].index + 1, str(x[2].burst) + "X")
@@ -54,7 +54,7 @@ def rr(q, t):
             # print(fifo)
             x = fifo.popleft()
 
-            if elapsed <= x[0]:
+            if elapsed < x[0]:
                 elapsed = x[0]
             
             endChar = "X\n"
@@ -63,6 +63,16 @@ def rr(q, t):
                 tempBurst = t
                 endChar = "\n"
                 x[2].burst -= t
+                temp = [item for item in q if item[2].arrival == elapsed + tempBurst]
+                heapify(temp)
+                for item in temp:
+                    fifo.append(heappop(temp))
+                    heappop(q)
+                # if temp[2].arrival == elapsed + tempBurst:
+                #     fifo.append(temp)
+                # else:
+                #     heappush(q, temp)
+                x[2].arrival = elapsed + tempBurst
                 fifo.append(x)
 
             print(elapsed, x[1] + 1, tempBurst, end=endChar)
