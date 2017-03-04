@@ -1,19 +1,19 @@
 from collections import deque
 from heapq import heappush, heappop
 
-def fcfs(x):
+def fcfs(q):
     pass
 
-def sjf(x):
+def sjf(q):
     pass
 
-def srtf(x):
+def srtf(q):
     pass
 
-def p(x):
+def p(q):
     pass
 
-def rr(x):
+def rr(q, t):
     pass
 
 class Process:
@@ -60,6 +60,6 @@ for i in range(testCases):
     elif sched_type == "p":
         p(pQueue)
     elif sched_type == "rr":
-        rr(pQueue)
+        rr(pQueue, time_quantum)
     else:
         print("Invalid scheduler")
