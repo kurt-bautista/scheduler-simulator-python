@@ -8,7 +8,7 @@ def fcfs(q):
 
         if elapsed <= x[0]:
             elapsed = x[0]
-            
+
         print(elapsed, x[1] + 1, str(x[2].burst) + "X")
         elapsed += x[2].burst
 
@@ -23,14 +23,31 @@ def p(q):
 
 def rr(q, t):
     elapsed = 0
+    fifo = deque([])
     while q:
-        x = heappop(q)
+        temp = heappop(q)
+        if elapsed >= temp[2].arrival:
+            fifo.append(temp)
+        else:
+            heappush(q, temp)
 
-        if elapsed <= x[0]:
-            elapsed = x[0]
+        while fifo:
+            # print(fifo)
+            x = fifo.popleft()
 
-        print(elapsed, x[1] + 1, str(x[2].burst), end="")
-        elapsed += x[2].burst
+            if elapsed <= x[0]:
+                elapsed = x[0]
+            
+            endChar = "X\n"
+            tempBurst = x[2].burst;
+            if tempBurst > t:
+                tempBurst = t
+                endChar = "\n"
+                x[2].burst -= t
+                fifo.append(x)
+
+            print(elapsed, x[1] + 1, tempBurst, end=endChar)
+            elapsed += tempBurst
 
 class Process:
     def __init__(self, arrival, burst, priority):
