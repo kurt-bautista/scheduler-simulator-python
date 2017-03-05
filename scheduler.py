@@ -51,7 +51,6 @@ def rr(q, t):
             heappush(q, temp)
 
         while fifo:
-            # print(fifo)
             x = fifo.popleft()
 
             if elapsed < x[0]:
@@ -59,19 +58,17 @@ def rr(q, t):
             
             endChar = "X\n"
             tempBurst = x[2].burst;
+
+            temp = [item for item in q if item[2].arrival <= elapsed + tempBurst]
+            heapify(temp)
+            for item in temp:
+                fifo.append(heappop(temp))
+                heappop(q)
+                
             if tempBurst > t:
                 tempBurst = t
                 endChar = "\n"
                 x[2].burst -= t
-                temp = [item for item in q if item[2].arrival == elapsed + tempBurst]
-                heapify(temp)
-                for item in temp:
-                    fifo.append(heappop(temp))
-                    heappop(q)
-                # if temp[2].arrival == elapsed + tempBurst:
-                #     fifo.append(temp)
-                # else:
-                #     heappush(q, temp)
                 x[2].arrival = elapsed + tempBurst
                 fifo.append(x)
 
