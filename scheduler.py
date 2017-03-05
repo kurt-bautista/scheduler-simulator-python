@@ -35,7 +35,34 @@ def sjf(q):
             elapsed += x[2].burst
 
 def srtf(q):
-    pass
+    elapsed = 0
+    pq = []
+    while q:
+        counter = 0
+        for p in q:
+            if p.arrival <= elapsed:
+                heappush(pq, (p.burst, p.index, p))
+                q[counter] = None
+                counter += 1
+                
+        q = [x for x in q if x is not None]
+
+        while pq:
+            x = heappop(pq)
+
+            if elapsed < x[2].arrival:
+                elapsed = x[2].arrival
+
+            y = None
+            if pq:
+                y = heappop(pq)
+            elif q and q[0].arrival <= elapsed + x[2].burst and :
+                y = q.pop(0)
+            if not y:
+                print(elapsed, x[2].index + 1, str(x[2].burst) + "X")
+                elapsed += x[2].burst
+            else:
+                pass
 
 def p(q):
     pass
@@ -64,7 +91,7 @@ def rr(q, t):
             for item in temp:
                 fifo.append(heappop(temp))
                 heappop(q)
-                
+
             if tempBurst > t:
                 tempBurst = t
                 endChar = "\n"
