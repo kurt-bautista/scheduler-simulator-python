@@ -56,13 +56,17 @@ def srtf(q):
             y = None
             if pq:
                 y = heappop(pq)
-            elif q and q[0].arrival <= elapsed + x[2].burst and :
+            elif q and q[0].arrival <= elapsed + x[0] and q[0].burst < abs((x[0] + elapsed) - q[0].arrival):
                 y = q.pop(0)
+
             if not y:
                 print(elapsed, x[2].index + 1, str(x[2].burst) + "X")
                 elapsed += x[2].burst
             else:
-                pass
+                newBurst = abs(y.arrival - (x[0] + elapsed))
+                elapsed += newBurst
+                heappush(pq, (newBurst, p.index, Process(elapsed, newBurst, x[2].priority, p.index))) 
+                print(elapsed, y.index + 1, newBurst)
 
 def p(q):
     pass
@@ -132,11 +136,8 @@ for i in range(testCases):
 
         if sched_type == "fcfs" or sched_type == "rr":
             heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
-        elif sched_type == "sjf":
-            # heappush(pQueue, (args[1], args[0], j, Process(args[0], args[1], args[2])))
+        elif sched_type == "sjf" or sched_type == "srtf":
             pQueue.append(Process(arrival, burst, priority, j))
-        elif sched_type == "srtf":
-            heappush(pQueue, (args[0], j, Process(arrival, burst, priority)))
         elif sched_type == "p":
             heappush(pQueue, (args[2], j, Process(args[0], args[1], args[2])))
         else:
