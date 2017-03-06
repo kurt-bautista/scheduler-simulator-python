@@ -70,6 +70,7 @@ def rr(q, t):
                 endChar = "\n"
                 x[2].burst -= t
                 x[2].arrival = elapsed + tempBurst
+                x[0] = elapsed + tempBurst
                 fifo.append(x)
 
             print(elapsed, x[1] + 1, tempBurst, end=endChar)
@@ -104,14 +105,13 @@ for i in range(testCases):
         priority = args[2]
 
         if sched_type == "fcfs" or sched_type == "rr":
-            heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
+            heappush(pQueue, [arrival, j, Process(arrival, burst, priority, j)])
         elif sched_type == "sjf":
-            # heappush(pQueue, (args[1], args[0], j, Process(args[0], args[1], args[2])))
             pQueue.append(Process(arrival, burst, priority, j))
         elif sched_type == "srtf":
-            heappush(pQueue, (args[0], j, Process(arrival, burst, priority)))
+            heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
         elif sched_type == "p":
-            heappush(pQueue, (args[2], j, Process(args[0], args[1], args[2])))
+            heappush(pQueue, (args[2], j, Process(arrival, burst, priority, j)))
         else:
             print("Invalid scheduler")
 
