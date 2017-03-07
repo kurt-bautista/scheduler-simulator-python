@@ -58,7 +58,7 @@ def rr(q, t):
             endChar = "X\n"
             tempBurst = x[2].burst;
 
-            temp = sorted([item for item in q if item[2].arrival <= elapsed + tempBurst])
+            tempQ = sorted([item for item in q if item[2].arrival <= elapsed + tempBurst])
 
             if x[2].timeRun == 0:
                 x[2].firstRun = elapsed
@@ -71,9 +71,9 @@ def rr(q, t):
                 x[2].arrival = elapsed + tempBurst
                 x[0] = elapsed + tempBurst
                 x[2].timeRun += tempBurst
-                for item in temp:
+                for item in tempQ:
                     if item[2].arrival <= elapsed + tempBurst:
-                        fifo.append(temp.pop(0))
+                        fifo.append(tempQ.pop(0))
                         heappop(q)
                 if not fifo:
                     same = True
