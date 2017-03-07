@@ -45,10 +45,9 @@ def rr(q, t):
     fifo = deque([])
     while q:
         temp = heappop(q)
-        if elapsed >= temp[2].arrival:
-            fifo.append(temp)
-        else:
-            heappush(q, temp)
+        if elapsed < temp[0]:
+                elapsed = temp[0]
+        fifo.append(temp)
 
         while fifo:
             x = fifo.popleft()
@@ -59,22 +58,39 @@ def rr(q, t):
             endChar = "X\n"
             tempBurst = x[2].burst;
 
-            temp = [item for item in q if item[2].arrival <= elapsed + tempBurst]
-            heapify(temp)
-            for item in temp:
-                fifo.append(heappop(temp))
-                heappop(q)
-                
+            temp = sorted([item for item in q if item[2].arrival <= elapsed + tempBurst])
+
+            if x[2].timeRun == 0:
+                x[2].firstRun = elapsed
+
+            same = False
             if tempBurst > t:
                 tempBurst = t
                 endChar = "\n"
                 x[2].burst -= t
                 x[2].arrival = elapsed + tempBurst
                 x[0] = elapsed + tempBurst
+                x[2].timeRun += tempBurst
+                for item in temp:
+                    if item[2].arrival <= elapsed + tempBurst:
+                        fifo.append(temp.pop(0))
+                        heappop(q)
+                if not fifo:
+                    same = True
                 fifo.append(x)
+            else:
+                if x[2].timeRun == 0:
+                    x[2].timeRun = tempBurst
+                else:
+                    x[2].timeRun += tempBurst
+                
+            if not same:
+                print(x[2].firstRun, x[1] + 1, x[2].timeRun, end=endChar)
+                x[2].timeRun = 0
 
-            print(elapsed, x[1] + 1, tempBurst, end=endChar)
             elapsed += tempBurst
+
+            
 
 class Process:
     def __init__(self, arrival, burst, priority, index):
@@ -82,6 +98,10 @@ class Process:
         self.burst = burst
         self.priority = priority
         self.index = index
+        self.firstRun = arrival
+
+    timeRun = 0
+    firstRun = 0
 
 testCases = int(input())
 
