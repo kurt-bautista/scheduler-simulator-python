@@ -43,8 +43,9 @@ def p(q):
 def rr(q, t):
     elapsed = 0
     fifo = deque([])
+    q = sorted(q)
     while q:
-        temp = heappop(q)
+        temp = q.pop(0)
         if elapsed < temp[0]:
                 elapsed = temp[0]
         fifo.append(temp)
@@ -58,7 +59,7 @@ def rr(q, t):
             endChar = "X\n"
             tempBurst = x[2].burst;
 
-            tempQ = sorted([item for item in q if item[2].arrival <= elapsed + tempBurst])
+            tempQ = sorted([item for item in q]) #  if item[2].arrival <= elapsed + tempBurst
 
             if x[2].timeRun == 0:
                 x[2].firstRun = elapsed
@@ -72,8 +73,8 @@ def rr(q, t):
                 x[0] = elapsed + tempBurst
                 x[2].timeRun += tempBurst
                 for item in tempQ:
-                    if item[2].arrival <= elapsed + tempBurst + 0 if not fifo else fifo[0][2].burst if fifo[0][2].burst <= t else t:
-                        fifo.append(tempQ.pop(0))
+                    if item[2].arrival <= elapsed + tempBurst + (0 if not q and not fifo else (q[0][2].burst if not fifo else (fifo[0][2].burst if fifo[0][2].burst <= t else t))):
+                        fifo.append(item)
                         heappop(q)
                 if not fifo:
                     same = True
