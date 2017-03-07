@@ -43,52 +43,60 @@ def p(q):
 def rr(q, t):
     elapsed = 0
     fifo = deque([])
+    q = sorted(q)
     while q:
-        temp = heappop(q)
-        if elapsed < temp[0]:
-                elapsed = temp[0]
-        fifo.append(temp)
+        process = None
+        if fifo and q[0][0] > elapsed:
+            process = fifo.popleft()
+        else:
+            process = q.pop(0)
 
-        while fifo:
-            x = fifo.popleft()
+        if elapsed < process[0]:
+                elapsed = process[0]
 
-            if elapsed < x[0]:
-                elapsed = x[0]
-            
-            endChar = "X\n"
-            tempBurst = x[2].burst;
+        endChar = "X\n"
+        burst = process[2].burst;
+        
+        if process[2].timeRun == 0:
+            process[2].firstRun = elapsed
 
-            tempQ = sorted([item for item in q if item[2].arrival <= elapsed + tempBurst])
-
-            if x[2].timeRun == 0:
-                x[2].firstRun = elapsed
-
-            same = False
-            if tempBurst > t:
-                tempBurst = t
-                endChar = "\n"
-                x[2].burst -= t
-                x[2].arrival = elapsed + tempBurst
-                x[0] = elapsed + tempBurst
-                x[2].timeRun += tempBurst
-                for item in tempQ:
-                    if item[2].arrival <= elapsed + tempBurst + 0 if not fifo else fifo[0][2].burst if fifo[0][2].burst <= t else t:
-                        fifo.append(tempQ.pop(0))
-                        heappop(q)
-                if not fifo:
-                    same = True
-                fifo.append(x)
+        same = False
+        if burst > t:
+            burst = t
+            endChar = "\n"
+            process[2].burst -= t
+            process[2].arrival = elapsed + burst
+            process[0] = elapsed + burst
+            process[2].timeRun += burst
+            if not fifo and not q[0][0] > elapsed:
+                same = True
+            fifo.append(process)
+        else:
+            if process[2].timeRun == 0:
+                process[2].timeRun = burst
             else:
-                if x[2].timeRun == 0:
-                    x[2].timeRun = tempBurst
-                else:
-                    x[2].timeRun += tempBurst
-                
-            if not same:
-                print(x[2].firstRun, x[1] + 1, x[2].timeRun, end=endChar)
-                x[2].timeRun = 0
+                process[2].timeRun += burst
 
-            elapsed += tempBurst
+        if not same:
+            print(process[2].firstRun, process[1] + 1, process[2].timeRun, end=endChar)
+            process[2].timeRun = 0
+
+        elapsed += burst
+                # for item in tempQ:
+                #     if item[2].arrival <= elapsed + tempBurst + 0 if not fifo else fifo[0][2].burst if fifo[0][2].burst <= t else t:
+                #         fifo.append(tempQ.pop(0))
+                #         heappop(q)
+                
+        # while fifo:
+        #     x = fifo.popleft()
+
+        #     if elapsed < x[0]:
+        #         elapsed = x[0]
+            
+
+        #     tempQ = sorted([item for item in q if item[2].arrival <= elapsed + tempBurst])
+
+
 
             
 
