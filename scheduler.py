@@ -72,7 +72,7 @@ def rr(q, t):
                 x[0] = elapsed + tempBurst
                 x[2].timeRun += tempBurst
                 for item in tempQ:
-                    if item[2].arrival <= elapsed + tempBurst:
+                    if item[2].arrival <= elapsed + tempBurst + 0 if not fifo else fifo[0][2].burst if fifo[0][2].burst <= t else t:
                         fifo.append(tempQ.pop(0))
                         heappop(q)
                 if not fifo:
