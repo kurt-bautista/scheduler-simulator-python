@@ -84,24 +84,7 @@ def rr(q, t):
             print(process[2].firstRun, process[1] + 1, process[2].timeRun, end=endChar)
             process[2].timeRun = 0
 
-        elapsed += burst
-                # for item in tempQ:
-                #     if item[2].arrival <= elapsed + tempBurst + 0 if not fifo else fifo[0][2].burst if fifo[0][2].burst <= t else t:
-                #         fifo.append(tempQ.pop(0))
-                #         heappop(q)
-                
-        # while fifo:
-        #     x = fifo.popleft()
-
-        #     if elapsed < x[0]:
-        #         elapsed = x[0]
-            
-
-        #     tempQ = sorted([item for item in q if item[2].arrival <= elapsed + tempBurst])
-
-
-
-            
+        elapsed += burst 
 
 class Process:
     def __init__(self, arrival, burst, priority, index):
@@ -142,7 +125,7 @@ for i in range(testCases):
         elif sched_type == "srtf":
             heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
         elif sched_type == "p":
-            heappush(pQueue, (args[2], j, Process(arrival, burst, priority, j)))
+            heappush(pQueue, (priority, j, Process(arrival, burst, priority, j)))
         else:
             print("Invalid scheduler")
 
