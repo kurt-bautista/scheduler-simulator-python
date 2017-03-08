@@ -44,9 +44,10 @@ def rr(q, t):
     elapsed = 0
     fifo = deque([])
     q = sorted(q)
-    while q:
+    same = False
+    while q or fifo:
         process = None
-        if fifo and q[0][0] > elapsed:
+        if fifo and (True if not q else q[0][0] > elapsed and fifo[0][0] < q[0][0]) :
             process = fifo.popleft()
         else:
             process = q.pop(0)
@@ -60,7 +61,6 @@ def rr(q, t):
         if process[2].timeRun == 0:
             process[2].firstRun = elapsed
 
-        same = False
         if burst > t:
             burst = t
             endChar = "\n"
@@ -68,10 +68,13 @@ def rr(q, t):
             process[2].arrival = elapsed + burst
             process[0] = elapsed + burst
             process[2].timeRun += burst
-            if not fifo and not q[0][0] > elapsed:
-                same = True
             fifo.append(process)
+            if len(fifo) == 1 and (True if not q else q[0][0] > elapsed + burst):
+                same = True
+            else:
+                same = False
         else:
+            same = False
             if process[2].timeRun == 0:
                 process[2].timeRun = burst
             else:
