@@ -54,7 +54,7 @@ def srtf(q):
         counter = 0
         for p in q:
             if p[3].arrival < elapsed + process[3].burst: # <= ?
-                heappush(pq, [p[3].burst, p[3].arrival, p[3].index, p[3]])
+                heappush(pq, [p[3].arrival, p[3].burst, p[3].index, p[3]])
                 q[counter] = None
                 counter += 1
                 
@@ -63,11 +63,10 @@ def srtf(q):
         if elapsed < process[3].arrival:
             elapsed = process[3].arrival
 
-        nextProcess = None
-        if pq:
-            nextProcess = heappop(pq)
-        
-        if nextProcess:
+        sortedArrival = sorted(pq, key=lambda x: x[0])
+        fromQ = True
+        found = False
+        for nextProcess in sortedArrival:
             nextBurst = process[3].burst - abs(nextProcess[3].arrival - elapsed)
             if nextProcess[3].burst < nextBurst:
                 if fromQ: # arrival, burst, index, process
@@ -75,76 +74,52 @@ def srtf(q):
                     process[1] -= nextProcess[3].arrival - elapsed
                     process[3].arrival = nextProcess[3].arrival
                     process[3].burst -= nextProcess[3].arrival - elapsed
-                    heappush(pq, [process[1], process[0], process[2], process[3]])
+                    heappush(pq, process) # [process[1], process[0], process[2], process[3]]
                 else: # burst, arrival, index, process
                     process[1] = nextProcess[3].arrival
                     process[0] -= nextProcess[3].arrival - elapsed
                     process[3].arrival = nextProcess[3].arrival
                     process[3].burst -= nextProcess[3].arrival - elapsed
                     heappush(pq, process)
-                print(elapsed, process[2] + 1, nextProcess[3].arrival - elapsed)
-                elapsed += nextProcess[3].arrival - elapsed
-            else:
-                print(elapsed, process[2] + 1, str(process[3].burst) + "X")
-                elapsed += process[3].burst
-            heappush(pq, nextProcess)
-        else:
+                if nextProcess[3].arrival - elapsed > 0:
+                    print(elapsed, process[2] + 1, nextProcess[3].arrival - elapsed)
+                    elapsed += nextProcess[3].arrival - elapsed
+                found = True
+                # pq.remove(nextProcess)
+                # heapify(pq)
+                break
+        if not found:
             print(elapsed, process[2] + 1, str(process[3].burst) + "X")
             elapsed += process[3].burst
 
-            #     process[0] = process[3].arrival - nextProcess[3].arrival
-            #     x[1] -= y[3].arrival - elapsed
-            #     x[3].arrival = y[3].arrival
-            #     x[3].burst -= y[3].arrival - elapsed
-            #     print(elapsed, x[2] + 1, y[3].arrival - elapsed)
-            #     elapsed += y[3].arrival - elapsed
-            #     heappush(pq, x)
-            # else:
-            #     print(elapsed, x[2] + 1, str(x[1]) + "X")
-            #     elapsed += x[1]
-            # heappush(pq, y)
-    # elapsed = 0
-    # pq = []
-    # while q:
-    #     counter = 0
-    #     for item in q:
-    #         if item.arrival <= elapsed:
-    #             heappush(pq, [item.arrival, item.burst, item.index, item])
-    #             q[counter] = None
-    #             counter += 1
-                
-    #     q = [x for x in q if x is not None]
-
-    #     while pq:
-    #         x = heappop(pq)
-
-    #         if elapsed < x[0]:
-    #             elapsed = x[0]
-    #         counter = 0
-    #         for item in q:
-    #             if item.arrival <= elapsed + x[1]:
-    #                 heappush(pq, [item.arrival, item.burst, item.index, item])
-    #                 q[counter] = None
-    #                 counter += 1
-    #         q = [x for x in q if x is not None]
-            
-    #         y = None if not pq else heappop(pq)
-    #         if y:
-    #             if y[1] < y[3].arrival - elapsed:
-    #                 x[0] = x[1] - y[3].arrival
-    #                 x[1] -= y[3].arrival - elapsed
-    #                 x[3].arrival = y[3].arrival
-    #                 x[3].burst -= y[3].arrival - elapsed
-    #                 print(elapsed, x[2] + 1, y[3].arrival - elapsed)
-    #                 elapsed += y[3].arrival - elapsed
-    #                 heappush(pq, x)
-    #             else:
-    #                 print(elapsed, x[2] + 1, str(x[1]) + "X")
-    #                 elapsed += x[1]
-    #             heappush(pq, y)
-    #         else:
-    #             print(elapsed, x[2] + 1, x[1])
-    #             elapsed += x[1]
+        # nextProcess = None
+        # if pq:
+        #     nextProcess = heappop(pq)
+        
+        # if nextProcess:
+        #     nextBurst = process[3].burst - abs(nextProcess[3].arrival - elapsed)
+        #     if nextProcess[3].burst < nextBurst:
+        #         if fromQ: # arrival, burst, index, process
+        #             process[0] = nextProcess[3].arrival
+        #             process[1] -= nextProcess[3].arrival - elapsed
+        #             process[3].arrival = nextProcess[3].arrival
+        #             process[3].burst -= nextProcess[3].arrival - elapsed
+        #             heappush(pq, [process[1], process[0], process[2], process[3]])
+        #         else: # burst, arrival, index, process
+        #             process[1] = nextProcess[3].arrival
+        #             process[0] -= nextProcess[3].arrival - elapsed
+        #             process[3].arrival = nextProcess[3].arrival
+        #             process[3].burst -= nextProcess[3].arrival - elapsed
+        #             heappush(pq, process)
+        #         print(elapsed, process[2] + 1, nextProcess[3].arrival - elapsed)
+        #         elapsed += nextProcess[3].arrival - elapsed
+        #     else:
+        #         print(elapsed, process[2] + 1, str(process[3].burst) + "X")
+        #         elapsed += process[3].burst
+        #     heappush(pq, nextProcess)
+        # else:
+        #     print(elapsed, process[2] + 1, str(process[3].burst) + "X")
+        #     elapsed += process[3].burst
 
 def prio(q):
     elapsed = 0
