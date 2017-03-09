@@ -14,34 +14,144 @@ def fcfs(q):
 
 def sjf(q):
     elapsed = 0
+    q = sorted(q)
     pq = []
-    while q:
+    while q or pq:
+        process = None
+        if pq:
+            process = heappop(pq)
+        else:
+            process = q.pop(0)
+
         counter = 0
         for p in q:
-            if p.arrival <= elapsed:
-                heappush(pq, (p.burst, p.index, p))
+            if p[3].arrival <= elapsed + process[3].burst:
+                heappush(pq, [p[3].burst, p[3].arrival, p[3].index, p[3]])
                 q[counter] = None
                 counter += 1
                 
         q = [x for x in q if x is not None]
 
-        while pq:
-            x = heappop(pq)
+        if elapsed < process[3].arrival:
+            elapsed = process[3].arrival
 
-            if elapsed < x[2].arrival:
-                elapsed = x[2].arrival
-
-            print(elapsed, x[2].index + 1, str(x[2].burst) + "X")
-            elapsed += x[2].burst
+        print(elapsed, process[3].index + 1, str(process[3].burst) + "X")
+        elapsed += process[3].burst
 
 def srtf(q):
+    elapsed = 0
+    q = sorted(q)
+    pq = []
+    while q or pq:
+        process = None
+        fromQ = True
+        if pq:
+            process = heappop(pq)
+            fromQ = False
+        else:
+            process = q.pop(0)
+
+        counter = 0
+        for p in q:
+            if p[3].arrival < elapsed + process[3].burst: # <= ?
+                heappush(pq, [p[3].burst, p[3].arrival, p[3].index, p[3]])
+                q[counter] = None
+                counter += 1
+                
+        q = [x for x in q if x is not None]
+
+        if elapsed < process[3].arrival:
+            elapsed = process[3].arrival
+
+        nextProcess = None
+        if pq:
+            nextProcess = heappop(pq)
+        
+        if nextProcess:
+            if nextProcess[3].burst < process[1] - (nextProcess[3].arrival - elapsed):
+                if fromQ: # arrival, burst, index, process
+                    process[0] = nextProcess[3].arrival
+                    process[1] -= nextProcess[3].arrival - elapsed
+                    process[3].arrival = nextProcess[3].arrival
+                    process[3].burst -= nextProcess[3].arrival - elapsed
+                    heappush(pq, [process[1], process[0], process[2], process[3]])
+                else: # burst, arrival, index, process
+                    process[1] = nextProcess[3].arrival
+                    process[0] -= nextProcess[3].arrival - elapsed
+                    process[3].arrival = nextProcess[3].arrival
+                    process[3].burst -= nextProcess[3].arrival - elapsed
+                print(elapsed, process[2] + 1, nextProcess[3].arrival - elapsed)
+                elapsed += nextProcess[3].arrival - elapsed
+            else:
+                print(elapsed, process[2] + 1, str(process[3].burst) + "X")
+                elapsed += process[3].burst
+            heappush(pq, nextProcess)
+        else:
+            print(elapsed, process[2] + 1, str(process[3].burst) + "X")
+            elapsed += process[3].burst
+
+            #     process[0] = process[3].arrival - nextProcess[3].arrival
+            #     x[1] -= y[3].arrival - elapsed
+            #     x[3].arrival = y[3].arrival
+            #     x[3].burst -= y[3].arrival - elapsed
+            #     print(elapsed, x[2] + 1, y[3].arrival - elapsed)
+            #     elapsed += y[3].arrival - elapsed
+            #     heappush(pq, x)
+            # else:
+            #     print(elapsed, x[2] + 1, str(x[1]) + "X")
+            #     elapsed += x[1]
+            # heappush(pq, y)
+    # elapsed = 0
+    # pq = []
+    # while q:
+    #     counter = 0
+    #     for item in q:
+    #         if item.arrival <= elapsed:
+    #             heappush(pq, [item.arrival, item.burst, item.index, item])
+    #             q[counter] = None
+    #             counter += 1
+                
+    #     q = [x for x in q if x is not None]
+
+    #     while pq:
+    #         x = heappop(pq)
+
+    #         if elapsed < x[0]:
+    #             elapsed = x[0]
+    #         counter = 0
+    #         for item in q:
+    #             if item.arrival <= elapsed + x[1]:
+    #                 heappush(pq, [item.arrival, item.burst, item.index, item])
+    #                 q[counter] = None
+    #                 counter += 1
+    #         q = [x for x in q if x is not None]
+            
+    #         y = None if not pq else heappop(pq)
+    #         if y:
+    #             if y[1] < y[3].arrival - elapsed:
+    #                 x[0] = x[1] - y[3].arrival
+    #                 x[1] -= y[3].arrival - elapsed
+    #                 x[3].arrival = y[3].arrival
+    #                 x[3].burst -= y[3].arrival - elapsed
+    #                 print(elapsed, x[2] + 1, y[3].arrival - elapsed)
+    #                 elapsed += y[3].arrival - elapsed
+    #                 heappush(pq, x)
+    #             else:
+    #                 print(elapsed, x[2] + 1, str(x[1]) + "X")
+    #                 elapsed += x[1]
+    #             heappush(pq, y)
+    #         else:
+    #             print(elapsed, x[2] + 1, x[1])
+    #             elapsed += x[1]
+
+def prio(q):
     elapsed = 0
     pq = []
     while q:
         counter = 0
         for item in q:
             if item.arrival <= elapsed:
-                heappush(pq, [item.arrival, item.burst, item.index, item])
+                heappush(pq, [item.arrival, item.priority, item.index, item])
                 q[counter] = None
                 counter += 1
                 
@@ -55,89 +165,27 @@ def srtf(q):
             counter = 0
             for item in q:
                 if item.arrival <= elapsed + x[1]:
-                    heappush(pq, [item.arrival, item.burst, item.index, item])
+                    heappush(pq, [item.arrival, item.priority, item.index, item])
                     q[counter] = None
                     counter += 1
-            q = [a for a in q if a is not None]
+            q = [x for x in q if x is not None]
             
             y = None if not pq else heappop(pq)
             if y:
-                if y[1] < y[0] - elapsed:
-                    x[0] = y[0]
-                    x[1] = y[0] - elapsed
-                    x[3].arrival = y[0]
-                    x[3].burst = y[0] - elapsed
-                    print(elapsed, x[2] + 1, x[1])
+                if y[1] < y[3].priority:
+                    x[0] = x[1] - y[3].arrival
+                    x[3].arrival = y[3].arrival
+                    x[3].burst -= y[3].arrival - elapsed
+                    print(elapsed, x[2] + 1, y[3].arrival - elapsed)
+                    elapsed += y[3].arrival - elapsed
+                    heappush(pq, x)
+                else:
+                    print(elapsed, x[2] + 1, str(x[1]) + "X")
                     elapsed += x[1]
+                heappush(pq, y)
             else:
                 print(elapsed, x[2] + 1, x[1])
-
-def pRun(q):
-    elapsed = 0
-    # time = 0
-    burst = 0
-    #finalburst = 0
-    q = sorted(q)
-    working = []
-    arrived = []
-    notFirst = False
-    grab = False
-    skip = False
-    while q:
-        if notFirst is False:
-            current = heappop(q)
-            elapsed = current[0]
-            
-            grab = True
-        
-        
-        if notFirst:
-            if working:
-                old = heappop(working)
-            if arrived:
-                if working:
-                    heappush(arrived,[old[0], old[1], old[2], old[3]])
-                old = heappop(arrived)
-            if working is False and arrived is False:
-                current = heappop(q)
-                grab = True
-                skip = True
-                elapsed = current[0]
-
-
-            if old[3].burst < q[0][3].arrival - elapsed and skip is False:
-               #time += old[3].burst
-               timestart = elapsed
-               elapsed += old[3].burst
-               heappush(arrived, old)
-               print(timestart, old[3].index + 1, str(old[3].burst) + "X")
-            elif old[3].burst == q[0][3].arrival - elapsed and skip is False:
-                timestart = elapsed
-                elapsed += old[3].burst
-                print(timestart, old[3].index + 1, str(old[3].burst) + "X")
-                current = heappop(q)
-                grab = True
-            elif old[3].burst > q[0][3].arrival - elapsed and skip is False:
-                timestart = elapsed
-                elapsed = q[0][3].arrival
-                burst = q[0][3].arrival - elapsed
-                current = heappop(q)
-                grab = True
-                old[3].burst -= burst
-                heappush(arrived,[old[0],old[1],old[2],old[3]])
-                
-                print(timestart, old[3].index + 1, old[3].burst-(current[3].arrival-elapsed))
-                
-        if grab:
-            heappush(working,[current[0], current[1], current[2], current[3]]) 
-        notFirst = True
-        grab = False
-        skip = False
-
-    while arrived:
-        current = heappop(arrived)
-        elapsed += current[3].burst
-        print(elapsed, current[3].index +1, str(current[3].burst) + "X")
+                elapsed += x[1]
 
 def rr(q, t):
     elapsed = 0
@@ -205,9 +253,9 @@ for i in range(testCases):
         if sched_type == "fcfs" or sched_type == "rr":
             heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
         elif sched_type == "sjf" or sched_type == "srtf":
-            pQueue.append(Process(arrival, burst, priority, j))
+            pQueue.append([arrival, burst, j, Process(arrival, burst, priority, j)])
         elif sched_type == "p":
-            heappush(pQueue, (args[2], j, Process(args[0], args[1], args[2])))
+            pQueue.append(Process(arrival, burst, priority, j))
         else:
             print("Invalid scheduler")
 
@@ -220,7 +268,7 @@ for i in range(testCases):
     elif sched_type == "srtf":
         srtf(pQueue)
     elif sched_type == "p":
-        p(pQueue)
+        prio(pQueue)
     elif sched_type == "rr":
         rr(pQueue, time_quantum)
     else:
