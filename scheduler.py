@@ -142,31 +142,41 @@ def rr(q, t):
         if fifo and (True if not q else q[0][0] > elapsed and fifo[0][0] < q[0][0]) :
             process = fifo.popleft()
         else:
-            heappush(q, temp)
+            process = q.pop(0)
 
-        while fifo:
-            x = fifo.popleft()
+        if elapsed < process[0]:
+                elapsed = process[0]
 
-            if elapsed < x[0]:
-                elapsed = x[0]
-            
-            endChar = "X\n"
-            tempBurst = x[2].burst;
+        endChar = "X\n"
+        burst = process[2].burst;
+        
+        if process[2].timeRun == 0:
+            process[2].firstRun = elapsed
 
-            temp = [item for item in q if item[2].arrival <= elapsed + tempBurst]
-            heapify(temp)
-            for item in temp:
-                fifo.append(heappop(temp))
-                heappop(q)
+        if burst > t:
+            burst = t
+            endChar = "\n"
+            process[2].burst -= t
+            process[2].arrival = elapsed + burst
+            process[0] = elapsed + burst
+            process[2].timeRun += burst
+            fifo.append(process)
+            if len(fifo) == 1 and (True if not q else q[0][0] > elapsed + burst):
+                same = True
+            else:
+                same = False
+        else:
+            same = False
+            if process[2].timeRun == 0:
+                process[2].timeRun = burst
+            else:
+                process[2].timeRun += burst
 
-            if tempBurst > t:
-                tempBurst = t
-                endChar = "\n"
-                x[2].burst -= t
-                x[2].arrival = elapsed + tempBurst
-                fifo.append(x)
+        if not same:
+            print(process[2].firstRun, process[1] + 1, process[2].timeRun, end=endChar)
+            process[2].timeRun = 0
 
-        elapsed += burst 
+        elapsed += burst
 
 class Process:
     def __init__(self, arrival, burst, priority, index):
@@ -201,7 +211,7 @@ for i in range(testCases):
         priority = args[2]
 
         if sched_type == "fcfs" or sched_type == "rr":
-            heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
+            heappush(pQueue, [arrival, j, Process(arrival, burst, priority, j)])
         elif sched_type == "sjf" or sched_type == "srtf":
             heappush(pQueue, [arrival, burst, j, Process(arrival, burst, priority, j)])
         elif sched_type == "p":
