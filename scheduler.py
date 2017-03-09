@@ -135,10 +135,12 @@ def prio(q):
 def rr(q, t):
     elapsed = 0
     fifo = deque([])
-    while q:
-        temp = heappop(q)
-        if elapsed >= temp[2].arrival:
-            fifo.append(temp)
+    q = sorted(q)
+    same = False
+    while q or fifo:
+        process = None
+        if fifo and (True if not q else q[0][0] > elapsed and fifo[0][0] < q[0][0]) :
+            process = fifo.popleft()
         else:
             heappush(q, temp)
 
@@ -164,8 +166,7 @@ def rr(q, t):
                 x[2].arrival = elapsed + tempBurst
                 fifo.append(x)
 
-            print(elapsed, x[1] + 1, tempBurst, end=endChar)
-            elapsed += tempBurst
+        elapsed += burst 
 
 class Process:
     def __init__(self, arrival, burst, priority, index):
@@ -173,6 +174,10 @@ class Process:
         self.burst = burst
         self.priority = priority
         self.index = index
+        self.firstRun = arrival
+
+    timeRun = 0
+    firstRun = 0
 
 testCases = int(input())
 
