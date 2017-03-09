@@ -40,21 +40,18 @@ def sjf(q):
 
 def srtf(q):
     elapsed = 0
-    q = sorted(q)
     pq = []
     while q or pq:
         process = None
-        fromQ = True
         if pq:
             process = heappop(pq)
-            fromQ = False
         else:
-            process = q.pop(0)
+            process = heappop(q)
 
         counter = 0
         for p in q:
             if p[3].arrival < elapsed + process[3].burst: # <= ?
-                heappush(pq, [p[3].arrival, p[3].burst, p[3].index, p[3]])
+                heappush(pq, p)
                 q[counter] = None
                 counter += 1
                 
@@ -64,29 +61,19 @@ def srtf(q):
             elapsed = process[3].arrival
 
         sortedArrival = sorted(pq, key=lambda x: x[0])
-        fromQ = True
         found = False
         for nextProcess in sortedArrival:
             nextBurst = process[3].burst - abs(nextProcess[3].arrival - elapsed)
             if nextProcess[3].burst < nextBurst:
-                if fromQ: # arrival, burst, index, process
-                    process[0] = nextProcess[3].arrival
-                    process[1] -= nextProcess[3].arrival - elapsed
-                    process[3].arrival = nextProcess[3].arrival
-                    process[3].burst -= nextProcess[3].arrival - elapsed
-                    heappush(pq, process) # [process[1], process[0], process[2], process[3]]
-                else: # burst, arrival, index, process
-                    process[1] = nextProcess[3].arrival
-                    process[0] -= nextProcess[3].arrival - elapsed
-                    process[3].arrival = nextProcess[3].arrival
-                    process[3].burst -= nextProcess[3].arrival - elapsed
-                    heappush(pq, process)
+                process[0] = nextProcess[3].arrival
+                process[1] -= nextProcess[3].arrival - elapsed
+                process[3].arrival = nextProcess[3].arrival
+                process[3].burst -= nextProcess[3].arrival - elapsed
+                heappush(pq, process) # [process[1], process[0], process[2], process[3]]
                 if nextProcess[3].arrival - elapsed > 0:
                     print(elapsed, process[2] + 1, nextProcess[3].arrival - elapsed)
                     elapsed += nextProcess[3].arrival - elapsed
                 found = True
-                # pq.remove(nextProcess)
-                # heapify(pq)
                 break
         if not found:
             print(elapsed, process[2] + 1, str(process[3].burst) + "X")
@@ -232,7 +219,7 @@ for i in range(testCases):
         elif sched_type == "sjf" or sched_type == "srtf":
             pQueue.append([arrival, burst, j, Process(arrival, burst, priority, j)])
         elif sched_type == "p":
-            pQueue.append(Process(arrival, burst, priority, j))
+            pQueue.append([arrival, priority, j, Process(arrival, burst, priority, j)])
         else:
             print("Invalid scheduler")
 
