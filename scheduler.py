@@ -68,7 +68,8 @@ def srtf(q):
             nextProcess = heappop(pq)
         
         if nextProcess:
-            if nextProcess[3].burst < process[1] - (nextProcess[3].arrival - elapsed):
+            nextBurst = process[3].burst - abs(nextProcess[3].arrival - elapsed)
+            if nextProcess[3].burst < nextBurst:
                 if fromQ: # arrival, burst, index, process
                     process[0] = nextProcess[3].arrival
                     process[1] -= nextProcess[3].arrival - elapsed
@@ -80,6 +81,7 @@ def srtf(q):
                     process[0] -= nextProcess[3].arrival - elapsed
                     process[3].arrival = nextProcess[3].arrival
                     process[3].burst -= nextProcess[3].arrival - elapsed
+                    heappush(pq, process)
                 print(elapsed, process[2] + 1, nextProcess[3].arrival - elapsed)
                 elapsed += nextProcess[3].arrival - elapsed
             else:
