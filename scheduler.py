@@ -211,7 +211,7 @@ for i in range(testCases):
         priority = args[2]
 
         if sched_type == "fcfs" or sched_type == "rr":
-            heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
+            heappush(pQueue, [arrival, j, Process(arrival, burst, priority, j)])
         elif sched_type == "sjf" or sched_type == "srtf":
             heappush(pQueue, [arrival, burst, j, Process(arrival, burst, priority, j)])
         elif sched_type == "p":
