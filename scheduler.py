@@ -142,7 +142,6 @@ def rr(q, t):
         if fifo and (True if not q else q[0][0] > elapsed and fifo[0][0] < q[0][0]) :
             process = fifo.popleft()
         else:
-<<<<<<< HEAD
             process = q.pop(0)
 
         if elapsed < process[0]:
@@ -176,31 +175,6 @@ def rr(q, t):
         if not same:
             print(process[2].firstRun, process[1] + 1, process[2].timeRun, end=endChar)
             process[2].timeRun = 0
-=======
-            heappush(q, temp)
-
-        while fifo:
-            x = fifo.popleft()
-
-            if elapsed < x[0]:
-                elapsed = x[0]
-            
-            endChar = "X\n"
-            tempBurst = x[2].burst;
-
-            temp = [item for item in q if item[2].arrival <= elapsed + tempBurst]
-            heapify(temp)
-            for item in temp:
-                fifo.append(heappop(temp))
-                heappop(q)
-
-            if tempBurst > t:
-                tempBurst = t
-                endChar = "\n"
-                x[2].burst -= t
-                x[2].arrival = elapsed + tempBurst
-                fifo.append(x)
->>>>>>> srtf
 
         elapsed += burst 
 
@@ -237,21 +211,11 @@ for i in range(testCases):
         priority = args[2]
 
         if sched_type == "fcfs" or sched_type == "rr":
-<<<<<<< HEAD
-            heappush(pQueue, [arrival, j, Process(arrival, burst, priority, j)])
-        elif sched_type == "sjf":
-            pQueue.append(Process(arrival, burst, priority, j))
-        elif sched_type == "srtf":
-            heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
-        elif sched_type == "p":
-            heappush(pQueue, (priority, j, Process(arrival, burst, priority, j)))
-=======
             heappush(pQueue, (arrival, j, Process(arrival, burst, priority, j)))
         elif sched_type == "sjf" or sched_type == "srtf":
             heappush(pQueue, [arrival, burst, j, Process(arrival, burst, priority, j)])
         elif sched_type == "p":
             heappush(pQueue, [arrival, priority, j, Process(arrival, burst, priority, j)])
->>>>>>> srtf
         else:
             print("Invalid scheduler")
 
